@@ -71,8 +71,8 @@ class BibleScrapper:
 
             self.save_text(book_num, book_name, raw_text)
 
-            if book_num == 1:
-                break
+            # if book_num == 1:
+            #     break
 
     def save_text(self, book_num, book_name, raw_text):
         # Open a new file with utf-8 encoding
