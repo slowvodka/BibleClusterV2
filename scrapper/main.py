@@ -2,7 +2,7 @@ import os
 from bs4 import BeautifulSoup
 import requests
 import codecs
-from scrapper.scrapper_consts import scrap_url, RAW_TEXT_DIR
+from project_consts import scrap_url, RAW_TEXT_DIR
 from logger import LOGGER
 import re
 
