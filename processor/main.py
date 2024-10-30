@@ -1,9 +1,11 @@
 from hebrew_tokenizer.hebrew_tokenizer import HebTokenizer
 from logger import LOGGER
 import pathlib
-from typing import Union, Tuple
+from typing import Union
+import pandas as pd
 
-from project_consts import DEFAULT_INDEX, EXPRESSIONS, FILES_PATH
+
+from project_consts import EXPRESSIONS, FILES_PATH
 import os
 import re
 from pathlib import Path
@@ -17,12 +19,24 @@ def list_files(directory):
             file_paths.append(filepath)  # add the file path to the list
     return tuple(sorted(file_paths))
 
+@dataclass()
+class TextStatAnalyzer:
+    raw_text: str
+    clean_text: str
+    verses_list: list[str]
+    words_list: list[str]
 
+    def __post_init__(self):
 
+        self.unique_words_list = list(set(self.words_list))
+        self.num_of_words = len(self.words_list)
+        self.num_of_unique_words = len(self.unique_words_list)
 
-class BookStatAnalyzer:
-    def __init__(self, raw_text):
-        return
+        self.parshiya_ptucha_count = self.raw_text.count("{פ}")
+        self.parshiya_stuma_count = self.raw_text.count("{ס}")
+
+        self.words_counts = pd.Series(self.words_list,name='word').value_counts().rename('count').reset_index()
+
 
 
 @dataclass
@@ -46,16 +60,16 @@ class Book:
         self.clean_text = self.create_clean_text()
 
         self.full_word_list = self.tokenizer.get_words(self.clean_text)
-        self.verses_list = self.clean_text.split('.')
+        self.verses_list = [verse.strip() for verse in self.clean_text.split('.') if verse != ' ']
 
-        self.num_of_words_in_text = None
-        self.num_of_unique_words_in_text = None
-        self.num_of_parshiya_ptucha = None
-        self.num_of_parshiya_stuma = None
+        analyzer = TextStatAnalyzer(raw_text=self.raw_text, clean_text=self.clean_text, verses_list=self.verses_list, words_list =self.full_word_list)
 
-
-        # self.create_stats()
-
+        self.unique_words_list =  analyzer.words_list
+        self.num_of_words =  analyzer.num_of_words
+        self.num_of_unique_words =  analyzer.num_of_unique_words
+        self.parshiya_ptucha_count = analyzer.parshiya_ptucha_count
+        self.parshiya_stuma_count = analyzer.parshiya_stuma_count
+        self.words_counts = analyzer.words_counts
 
     def create_clean_text(self, expressions=EXPRESSIONS):
         '''
@@ -74,28 +88,18 @@ class Book:
         return clean_text
 
 
-
-    # def create_stats(self):
-    #     self.calc_num_of_words_in_text()
-    #     self.calc_num_of_unique_words_in_text()
-    #     self.calc_num_of_parshiyot_in_text()
-    #
-    # def calc_num_of_words_in_text(self):
-    #     self.num_of_words_in_text = len(self.full_word_list)
-    #
-    # def calc_num_of_unique_words_in_text(self):
-    #     self.num_of_unique_words_in_text = len(set(self.full_word_list))
-    #
-    # def calc_num_of_parshiyot_in_text(self):
-    #     self.num_of_parshiya_ptucha = self.raw_text.count("{פ}")
-    #     self.num_of_parshiya_stuma = self.raw_text.count("{ס}")
-
-
-
-class BibleProcessor:
-    def __init__(self, file_paths: Tuple[Union[str, pathlib.Path]] = list_files(FILES_PATH)):
+class BookCollection:
+    def __init__(self, file_paths: tuple[str, pathlib.Path] = list_files(FILES_PATH)):
+        self.number_of_books = 0
         self.file_paths = file_paths
-        self.bible_books = {}
+        self.books = {}
+
+        for path_book in self.file_paths:
+            self.text_and_name_to_book(path_book)
+
+
+            #change me!
+            break
 
     def get_book_as_text(self, path: Union[str, pathlib.Path]):
         with open(path, encoding='utf-8') as file:
@@ -103,16 +107,14 @@ class BibleProcessor:
         return text
 
     def text_and_name_to_book(self, path: Union[str, pathlib.Path]):
-        name = Path(path).name.split('.')[0]
-        text = self.get_book_as_text(path)
-        LOGGER.info(f"{name} proccessed and cleaned")
-        book = Book(name, text)
-        self.bible_books[book.name] = book
+        book_title = Path(path).name.split('.')[0]
+        book_raw_text = self.get_book_as_text(path)
+        LOGGER.info(f"{book_title} proccessed and cleaned")
+        self.number_of_books+=1
+        book = Book(book_title, book_raw_text, self.number_of_books)
+        self.books[book.title] = book
+        LOGGER.info(f"{book_title} logged to collection.")
 
-    def process(self, test_mode=True):
-        for path_book in self.file_paths:
-            self.text_and_name_to_book(path_book)
-            if test_mode:
-                break
+
 
 

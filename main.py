@@ -1,4 +1,4 @@
-from processor.main import BibleProcessor
+from processor.main import BookCollection
 from scrapper.main import BibleScrapper
 
 if __name__ == '__main__':
@@ -6,6 +6,4 @@ if __name__ == '__main__':
     # BibleScrapper()
 
     #process
-    bb= BibleProcessor()
-    bb.process()
-    print((bb.bible_books))
+    bc = BookCollection()
