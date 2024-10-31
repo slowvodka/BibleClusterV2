@@ -1,0 +1,3 @@
+[submodule "hebrew_tokenizer"]
+	path = hebrew_tokenizer
+	url = https://github.com/eyaler/hebrew_tokenizer.git
