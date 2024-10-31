@@ -5,3 +5,6 @@ image: gitpod/workspace-full:latest
 tasks:
   - name: install requirements
     init: pip3 install -r requirements.txt
+
+additionalRepositories:
+  - url: https://github.com/eyaler/hebrew_tokenizer.git
