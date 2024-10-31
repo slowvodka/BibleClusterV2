@@ -6,5 +6,8 @@ tasks:
   - name: install requirements
     init: pip3 install -r requirements.txt
 
+  - name: install tokenizer
+    init: git clone https://github.com/eyaler/hebrew_tokenizer.git
+
 additionalRepositories:
   - url: https://github.com/eyaler/hebrew_tokenizer.git
