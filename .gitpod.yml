@@ -1,5 +1,9 @@
 # Image of workspace. Learn more: https://www.gitpod.io/docs/configure/workspaces/workspace-image
-image: gitpod/workspace-full:latest
+image: gitpod/workspace-python-3.10
+
+additionalRepositories:
+  # Syntax: <repo-url>@<branch or commit>:<destination-folder>
+  - "https://github.com/eyaler/hebrew_tokenizer.git@main:/hebrew_tokenizer"
 
 # List the start up tasks. Learn more: https://www.gitpod.io/docs/configure/workspaces/tasks
 tasks:
@@ -10,4 +14,6 @@ tasks:
 #    init: git clone https://github.com/eyaler/hebrew_tokenizer.git
 #
 #additionalRepositories:
-#  - url: https://github.com/eyaler/hebrew_tokenizer.git
+#  - url:
+
+
