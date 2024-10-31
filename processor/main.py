@@ -27,15 +27,13 @@ class TextStatAnalyzer:
     words_list: list[str]
 
     def __post_init__(self):
-
+        self.clean_text_lengh = len(self.clean_text)
         self.unique_words_list = list(set(self.words_list))
-        self.num_of_words = len(self.words_list)
-        self.num_of_unique_words = len(self.unique_words_list)
-
+        self.words_count = len(self.words_list)
+        self.unique_words_count = len(self.unique_words_list)
         self.parshiya_ptucha_count = self.raw_text.count("{פ}")
         self.parshiya_stuma_count = self.raw_text.count("{ס}")
-
-        self.words_counts = pd.Series(self.words_list,name='word').value_counts().rename('count').reset_index()
+        self.words_value_counts = pd.Series(self.words_list,name='word').value_counts().rename('count').reset_index()
 
 
 
@@ -47,29 +45,32 @@ class Book:
     clean_text : str = field(init=False)
     full_word_list : list[str] = field(init=False)
     verses_list : list[str] = field(init=False)
-    word_count: int = field(init=False)
-    unique_word_count: int = field(init=False)
-    num_of_words_in_text: int = field(init=False)
-    num_of_unique_words_in_text: int = field(init=False)
-    num_of_parshiya_ptucha: int = field(init=False)
-    num_of_parshiya_stuma: int = field(init=False)
+
+    clean_text_lengh : int = field(init=False)
+    unique_words_list : list[str] = field(init=False)
+    words_count : int = field(init=False)
+    unique_words_count : int = field(init=False)
+    parshiya_ptucha_count : int = field(init=False)
+    parshiya_stuma_count : int = field(init=False)
+    words_value_counts : pd.DataFrame = field(init=False)
 
     def __post_init__(self):
 
         self.tokenizer = HebTokenizer()
         self.clean_text = self.create_clean_text()
-
         self.full_word_list = self.tokenizer.get_words(self.clean_text)
         self.verses_list = [verse.strip() for verse in self.clean_text.split('.') if verse != ' ']
 
         analyzer = TextStatAnalyzer(raw_text=self.raw_text, clean_text=self.clean_text, verses_list=self.verses_list, words_list =self.full_word_list)
 
-        self.unique_words_list =  analyzer.words_list
-        self.num_of_words =  analyzer.num_of_words
-        self.num_of_unique_words =  analyzer.num_of_unique_words
+        self.clean_text_lengh = analyzer.clean_text_lengh
+        self.unique_words_list =  analyzer.unique_words_list
+        self.words_count =  analyzer.words_count
+        self.unique_words_count =  analyzer.unique_words_count
         self.parshiya_ptucha_count = analyzer.parshiya_ptucha_count
         self.parshiya_stuma_count = analyzer.parshiya_stuma_count
-        self.words_counts = analyzer.words_counts
+        self.words_value_counts = analyzer.words_value_counts
+
 
     def create_clean_text(self, expressions=EXPRESSIONS):
         '''
