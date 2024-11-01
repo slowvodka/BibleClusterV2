@@ -20,7 +20,7 @@ def list_files(directory):
     return tuple(sorted(file_paths))
 
 @dataclass()
-class TextStatAnalyzer:
+class TextStatCalculator:
     raw_text: str
     clean_text: str
     verses_list: list[str]
@@ -61,7 +61,7 @@ class Book:
         self.full_word_list = self.tokenizer.get_words(self.clean_text)
         self.verses_list = [verse.strip() for verse in self.clean_text.split('.') if verse != ' ']
 
-        analyzer = TextStatAnalyzer(raw_text=self.raw_text, clean_text=self.clean_text, verses_list=self.verses_list, words_list =self.full_word_list)
+        analyzer = TextStatCalculator(raw_text=self.raw_text, clean_text=self.clean_text, verses_list=self.verses_list, words_list =self.full_word_list)
 
         self.clean_text_lengh = analyzer.clean_text_lengh
         self.unique_words_list =  analyzer.unique_words_list
@@ -95,12 +95,17 @@ class BookCollection:
         self.file_paths = file_paths
         self.books = {}
 
+        # change me!
+        i=1
+
         for path_book in self.file_paths:
             self.text_and_name_to_book(path_book)
 
 
             #change me!
-            break
+            i+=1
+            if i == 2:
+                break
 
     def get_book_as_text(self, path: Union[str, pathlib.Path]):
         with open(path, encoding='utf-8') as file:
